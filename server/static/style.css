@@ -1,0 +1,600 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #fff;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+header h1 a {
+    color: #333;
+    text-decoration: none;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: #666;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 0.9rem;
+}
+
+nav a:hover {
+    color: #000;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.search-box input[type="text"] {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.search-box select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: #fff;
+}
+
+.search-box button {
+    padding: 10px 20px;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.search-box button:hover {
+    background: #555;
+}
+
+.stats {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.section {
+    margin-bottom: 30px;
+}
+
+.section h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.entity-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.entity-image {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.entity-info h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.entity-uri {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 15px;
+    word-break: break-all;
+}
+
+.entity-types {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.type-badge {
+    background: #f0f0f0;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.entity-description {
+    color: #666;
+    font-style: italic;
+}
+
+.properties-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.properties-table th,
+.properties-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.properties-table th {
+    font-weight: 500;
+    color: #666;
+    width: 180px;
+}
+
+.properties-table a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.properties-table a:hover {
+    text-decoration: underline;
+}
+
+.external-links {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.external-links h3 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.external-link {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    text-decoration: none;
+}
+
+.external-link.dbpedia {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.external-link.wikidata {
+    background: #d4edda;
+    color: #155724;
+}
+
+.external-link.yago {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.external-link.wiki {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.external-link.wikipedia {
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #ccc;
+}
+
+.external-link.metw {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.external-link.fandom {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.external-link.csv {
+    background: #e7d9f7;
+    color: #6f42c1;
+}
+
+.data-source {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.data-source.fandom {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.data-source.metw {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.data-source.csv {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.data-source.fandom {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.metw-card {
+    background: #fff5f5;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.metw-card h3 {
+    color: #721c24;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.metw-card .stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.metw-card .stat {
+    text-align: center;
+}
+
+.metw-card .stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.metw-card .stat-label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.lang-tag {
+    font-size: 0.75rem;
+    color: #999;
+    margin-left: 5px;
+}
+
+.entity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.entity-card {
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+}
+
+.entity-card a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.entity-card a:hover {
+    color: #0066cc;
+}
+
+.entity-card .type {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+}
+
+.formats {
+    margin-top: 30px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.formats a {
+    margin-right: 15px;
+    color: #666;
+    text-decoration: none;
+}
+
+.formats a:hover {
+    color: #333;
+}
+
+footer {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    color: #999;
+    font-size: 0.85rem;
+}
+
+footer a {
+    color: #666;
+}
+
+.sparql-form textarea {
+    width: 100%;
+    height: 250px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.results-table th,
+.results-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.results-table th {
+    background: #f5f5f5;
+}
+
+.message {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.message.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.build-form label {
+    display: block;
+    margin: 5px 0;
+}
+
+.build-form h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #555;
+    text-transform: capitalize;
+}
+
+pre {
+    background: #f5f5f5;
+    padding: 15px;
+    overflow: auto;
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+ul {
+    margin-left: 20px;
+}
+
+li {
+    margin: 5px 0;
+}
+
+code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9rem;
+}
+
+/* Multilingual labels section */
+.multilingual-labels {
+    background: #f0f7ff;
+    border: 1px solid #b8daff;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.multilingual-labels h3 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    color: #004085;
+}
+
+.fandom-badge {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+.lang-label-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #e8f4fd;
+}
+
+.lang-label-row:last-child {
+    border-bottom: none;
+}
+
+.lang-code {
+    background: #e2e3e5;
+    color: #383d41;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+    margin-right: 12px;
+    text-transform: uppercase;
+}
+
+.lang-value {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Entity external link badges on cards */
+.entity-external-links {
+    margin-top: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.entity-link-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.entity-link-badge.dbpedia {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.entity-link-badge.wikidata {
+    background: #d4edda;
+    color: #155724;
+}
+
+.entity-link-badge.yago {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.entity-link-badge.wikipedia {
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #ccc;
+}
+
+.entity-link-badge.metw {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.entity-link-badge.fandom {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.entity-link-badge.csv {
+    background: #e7d9f7;
+    color: #6f42c1;
+}
+
+/* Category filter badges */
+.category-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.category-badge.character {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.category-badge.location {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.category-badge.artifact {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+.category-badge.event {
+    background: #fce4ec;
+    color: #c2185b;
+}

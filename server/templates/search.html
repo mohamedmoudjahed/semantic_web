@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Search - Tolkien KG{% endblock %}
+
+{% block content %}
+<h2>Search Entities</h2>
+
+<form action="/search" method="get" class="search-box">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search entities...">
+    <select name="type">
+        <option value="">All types</option>
+        <option value="character" {% if type_filter == 'character' %}selected{% endif %}>Characters</option>
+        <option value="location" {% if type_filter == 'location' %}selected{% endif %}>Locations</option>
+        <option value="artifact" {% if type_filter == 'artifact' %}selected{% endif %}>Artifacts</option>
+        <option value="event" {% if type_filter == 'event' %}selected{% endif %}>Events</option>
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+{% if query %}
+<div class="section">
+    <h2>Results for "{{ query }}" ({{ results|length }})</h2>
+    
+    {% if results %}
+    <div class="entity-list">
+        {% for r in results %}
+        <div class="entity-card">
+            <a href="/resource/{{ r.uri }}">{{ r.label }}</a>
+            <div class="type">{{ r.type }}</div>
+            
+            {# FIX: Afficher les icônes des liens externes #}
+            {% if r.external_links %}
+            <div class="entity-external-links">
+                {% for link in r.external_links %}
+                <a href="{{ link.uri }}" target="_blank" class="entity-link-badge {{ link.type }}" title="{{ link.type|upper }}">
+                    {% if link.type == 'dbpedia' %}DB{% elif link.type == 'wikidata' %}WD{% elif link.type == 'yago' %}YA{% elif link.type == 'wikipedia' %}WI{% elif link.type == 'metw' %}ME{% elif link.type == 'fandom' %}FA{% elif link.type == 'csv' %}CSV{% else %}{{ link.type[0:2]|upper }}{% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No results found.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{# Légende des badges #}
+{% if query and results %}
+<div class="section" style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 20px;">
+    <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #666;">
+        <strong>🔗 External Links Legend:</strong>
+    </p>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <span><span class="entity-link-badge dbpedia">DB</span> DBpedia</span>
+        <span><span class="entity-link-badge wikidata">WD</span> Wikidata</span>
+        <span><span class="entity-link-badge yago">YA</span> YAGO</span>
+        <span><span class="entity-link-badge wikipedia">WI</span> Wikipedia</span>
+        <span><span class="entity-link-badge metw">ME</span> METW</span>
+        <span><span class="entity-link-badge fandom">FA</span> Fandom</span>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

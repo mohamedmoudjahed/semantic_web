@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% block title %}Build - Tolkien KG{% endblock %}
+
+{% block content %}
+<h2>Build Knowledge Graph</h2>
+
+{% if fuseki_mode %}
+<div class="message success">
+    <strong>✓ Fuseki Mode Active</strong><br>
+    The graph will be loaded into Fuseki after building.
+</div>
+{% else %}
+<div class="message">
+    <strong>File Mode Active</strong><br>
+    Fuseki not available. Graph will be saved to file only.
+</div>
+{% endif %}
+
+{% if message %}
+<div class="message {{ message_type }}">
+    {{ message }}
+    {% if output_path %}
+    <br>Output: <code>{{ output_path }}</code>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if stats %}
+<div class="stats">
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.processed }}</div>
+        <div class="stat-label">Processed</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.success }}</div>
+        <div class="stat-label">Success</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.triples }}</div>
+        <div class="stat-label">Triples</div>
+    </div>
+</div>
+{% endif %}
+
+<form method="post" class="build-form">
+    <h3>Categories to process</h3>
+    {% for group, cats in categories.items() %}
+    <h4 style="margin-top: 15px; color: #666; text-transform: capitalize;">{{ group }}</h4>
+    {% for cat, limit in cats %}
+    <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <input type="checkbox" name="categories" value="{{ cat }}" style="width: 16px; height: 16px;">
+        <span style="min-width: 250px;">{{ cat }}</span>
+        <input type="number" name="limit_{{ cat|replace(' ', '_') }}" value="{{ limit }}" min="0" max="1000" style="width: 70px; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px;">
+    </label>
+    {% endfor %}
+    {% endfor %}
+    
+    <h3 style="margin-top: 25px;">Enrichment Options</h3>
+    
+    <div style="background: #f0f7ff; border: 1px solid #b8daff; border-radius: 4px; padding: 15px; margin: 15px 0;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="multilingual" checked style="width: 18px; height: 18px;">
+            <span>
+                <strong>Multilingual Labels</strong>
+                <br>
+                <small style="color: #666;">
+                    Fetch translated names from 
+                    <a href="https://lotr.fandom.com" target="_blank">LOTR Fandom Wiki</a>
+                    (available in multiple languages)
+                    <br>
+                    <span style="color: #856404;">This makes the build slower (API rate limiting ~2-3 min)</span>
+                </small>
+            </span>
+        </label>
+        
+        <div id="language-options" style="margin-top: 10px; margin-left: 28px;">
+            <small style="color: #666; display: block; margin-bottom: 8px;">Select languages:</small>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="fr" checked> FR French</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="de" checked> DE German</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="es" checked> ES Spanish</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="it"> IT Italian</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="pl"> PL Polish</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="ru"> RU Russian</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="pt"> PT Portuguese</label>
+            <label style="margin-right: 15px;"><input type="checkbox" name="languages" value="nl"> NL Dutch</label>
+        </div>
+        
+        <script>
+            document.querySelector('input[name="multilingual"]').addEventListener('change', function() {
+                document.getElementById('language-options').style.display = this.checked ? 'block' : 'none';
+            });
+        </script>
+    </div>
+    
+    <div style="background: #f5f5f5; border-radius: 4px; padding: 15px; margin: 15px 0;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="metw_enrichment" checked style="width: 18px; height: 18px;">
+            <span>
+                <strong>METW Cards Enrichment</strong>
+                <br>
+                <small style="color: #666;">Link characters to Middle Earth: The Wizards card game data</small>
+            </span>
+        </label>
+    </div>
+    
+    <div style="background: #f5f5f5; border-radius: 4px; padding: 15px; margin: 15px 0;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="external_linking" checked style="width: 18px; height: 18px;">
+            <span>
+                <strong>Dynamic External Linking</strong>
+                <br>
+                <small style="color: #666;">Discover DBpedia, Wikidata, YAGO links via Wikipedia API</small>
+            </span>
+        </label>
+    </div>
+    
+    <br>
+    <button type="submit" id="build-btn" style="padding: 12px 30px; font-size: 1.1rem;">Build Graph</button>
+    <button type="button" id="cancel-btn" style="display: none; padding: 12px 30px; font-size: 1.1rem; background: #dc3545; color: white; border: none; border-radius: 4px; margin-left: 10px; cursor: pointer;">Cancel</button>
+    
+    <div id="progress-container" style="display: none; margin-top: 20px;">
+        <div style="background: #e9ecef; border-radius: 4px; height: 8px; overflow: hidden;">
+            <div id="progress-bar" style="background: #28a745; height: 100%; width: 0%; transition: width 0.3s;"></div>
+        </div>
+        <div id="progress-status" style="margin-top: 8px; font-size: 0.85rem; color: #666;"></div>
+        <div id="progress-details" style="margin-top: 4px; font-size: 0.75rem; color: #999;"></div>
+    </div>
+    
+    <div id="build-result" style="display: none; margin-top: 20px;"></div>
+</form>
+
+<script>
+(function() {
+    var currentEventSource = null;
+    var currentSessionId = null;
+    
+    var form = document.querySelector('.build-form');
+    var btn = document.getElementById('build-btn');
+    var cancelBtn = document.getElementById('cancel-btn');
+    var progressContainer = document.getElementById('progress-container');
+    var progressBar = document.getElementById('progress-bar');
+    var progressStatus = document.getElementById('progress-status');
+    var progressDetails = document.getElementById('progress-details');
+    var buildResult = document.getElementById('build-result');
+    
+    function resetUI() {
+        btn.disabled = false;
+        btn.textContent = 'Build Graph';
+        cancelBtn.style.display = 'none';
+        progressBar.style.background = '#28a745';
+    }
+    
+    function cancelBuild() {
+        if (currentEventSource) {
+            currentEventSource.close();
+            currentEventSource = null;
+        }
+        
+        if (currentSessionId) {
+            // Notifier le serveur de l'annulation
+            fetch('/build/cancel/' + currentSessionId, { method: 'POST' })
+                .catch(function() {});
+            currentSessionId = null;
+        }
+        
+        resetUI();
+        progressStatus.textContent = 'Build cancelled.';
+        progressBar.style.background = '#ffc107';
+        progressBar.style.width = '100%';
+    }
+    
+    cancelBtn.addEventListener('click', cancelBuild);
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Vérifier qu'au moins une catégorie est sélectionnée
+        var categories = form.querySelectorAll('input[name="categories"]:checked');
+        if (categories.length === 0) {
+            alert('Please select at least one category.');
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.textContent = 'Building...';
+        cancelBtn.style.display = 'inline-block';
+        progressContainer.style.display = 'block';
+        buildResult.style.display = 'none';
+        progressBar.style.width = '0%';
+        progressBar.style.background = '#28a745';
+        progressStatus.textContent = 'Starting build...';
+        progressDetails.textContent = '';
+        
+        // Envoyer le formulaire pour démarrer le build
+        var formData = new FormData(form);
+        
+        fetch('/build/start', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            currentSessionId = data.session_id;
+            
+            // Connecter au stream SSE
+            currentEventSource = new EventSource('/build/progress/' + data.session_id);
+            
+            currentEventSource.onmessage = function(event) {
+                var progress = JSON.parse(event.data);
+                
+                if (progress.step === 'heartbeat') {
+                    return;
+                }
+                
+                if (progress.step === 'cancelled') {
+                    currentEventSource.close();
+                    currentEventSource = null;
+                    resetUI();
+                    progressStatus.textContent = 'Build cancelled.';
+                    progressBar.style.background = '#ffc107';
+                    return;
+                }
+                
+                if (progress.step === 'error') {
+                    currentEventSource.close();
+                    currentEventSource = null;
+                    resetUI();
+                    progressBar.style.background = '#dc3545';
+                    progressStatus.textContent = progress.message;
+                    return;
+                }
+                
+                // Mettre à jour la barre de progression
+                if (progress.progress >= 0) {
+                    progressBar.style.width = progress.progress + '%';
+                }
+                progressStatus.textContent = progress.message;
+                
+                // Afficher les détails
+                if (progress.details && progress.details.stats) {
+                    var stats = progress.details.stats;
+                    progressDetails.textContent = 
+                        'Processed: ' + stats.processed + 
+                        ' | Success: ' + stats.success + 
+                        ' | Triples: ' + stats.triples;
+                } else if (progress.details && progress.details.page) {
+                    progressDetails.textContent = 
+                        progress.details.category + ' [' + 
+                        progress.details.current + '/' + 
+                        progress.details.total + ']';
+                }
+                
+                if (progress.step === 'complete') {
+                    currentEventSource.close();
+                    currentEventSource = null;
+                    currentSessionId = null;
+                    resetUI();
+                    progressBar.style.width = '100%';
+                    
+                    // Afficher le résultat
+                    var stats = progress.details.stats || {};
+                    buildResult.innerHTML = 
+                        '<div class="message success">' +
+                        '<strong>Build Complete!</strong><br>' +
+                        'Processed: ' + (stats.processed || 0) + '<br>' +
+                        'Success: ' + (stats.success || 0) + '<br>' +
+                        'Triples: ' + (stats.triples || 0) + '<br>' +
+                        'Fuseki: ' + (progress.details.fuseki_loaded ? 'Loaded' : 'Not loaded') +
+                        '</div>';
+                    buildResult.style.display = 'block';
+                }
+            };
+            
+            currentEventSource.onerror = function() {
+                currentEventSource.close();
+                currentEventSource = null;
+                resetUI();
+                progressStatus.textContent = 'Connection lost. Please try again.';
+                progressBar.style.background = '#dc3545';
+            };
+        })
+        .catch(function(error) {
+            resetUI();
+            progressStatus.textContent = 'Error: ' + error.message;
+            progressBar.style.background = '#dc3545';
+        });
+    });
+})();
+</script>
+
+<div class="section">
+    <h2>Build Process</h2>
+    <ol>
+        <li>Fetch pages from Tolkien Gateway wiki categories</li>
+        <li>Extract infobox data and generate RDF triples</li>
+        <li><strong>Dynamic external linking</strong> - Discover DBpedia/Wikidata/YAGO/Wikipedia links</li>
+        <li>Add ontology definitions</li>
+        <li>Enrich with METW cards data</li>
+        <li><em>(Optional)</em> Add multilingual labels from LOTR Fandom Wiki</li>
+        <li>Save to file (Turtle format)</li>
+        <li>Load into Fuseki triplestore (if available)</li>
+    </ol>
+</div>
+{% endblock %}

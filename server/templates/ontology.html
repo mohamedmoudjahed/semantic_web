@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Ontology - Tolkien KG{% endblock %}
+
+{% block content %}
+<h2>Tolkien Ontology</h2>
+
+<div class="section">
+    <h3>Classes</h3>
+    <ul>
+        <li><code>tont:Character</code> - A character from Tolkien's legendarium (subclass of schema:Person)</li>
+        <li><code>tont:Location</code> - A place in Middle-earth (subclass of schema:Place)</li>
+        <li><code>tont:Artifact</code> - An artifact or object (subclass of schema:Thing)</li>
+        <li><code>tont:Battle</code> - A battle (subclass of schema:Event)</li>
+        <li><code>tont:War</code> - A war (subclass of schema:Event)</li>
+        <li><code>tont:Race</code> - A race or people</li>
+        <li><code>tont:METWCard</code> - A card from Middle Earth: The Wizards CCG</li>
+    </ul>
+</div>
+
+<div class="section">
+    <h3>Properties</h3>
+    <ul>
+        <li><code>tont:race</code> - The race of a character</li>
+        <li><code>tprop:father</code> - Father relationship (subproperty of schema:parent)</li>
+        <li><code>tprop:mother</code> - Mother relationship (subproperty of schema:parent)</li>
+        <li><code>tprop:realm</code> - The realm of a location</li>
+        <li><code>tprop:result</code> - The result of an event</li>
+        <li><code>tprop:metwCard</code> - Link to METW card</li>
+    </ul>
+</div>
+
+<div class="section">
+    <h3>Turtle Representation</h3>
+    <pre>{{ turtle }}</pre>
+</div>
+
+<div class="formats">
+    <strong>Other formats:</strong>
+    <a href="/ontology?format=turtle">Turtle</a>
+    <a href="/ontology?format=rdfxml">RDF/XML</a>
+    <a href="/ontology?format=jsonld">JSON-LD</a>
+</div>
+{% endblock %}

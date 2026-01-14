@@ -1,0 +1,96 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema1: <http://schema.org/> .
+@prefix tont: <http://tolkien-kg.org/ontology/> .
+@prefix tprop: <http://tolkien-kg.org/property/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tont:Artifact a owl:Class ;
+    rdfs:label "Tolkien Artifact"@en ;
+    rdfs:subClassOf schema1:Thing .
+
+tont:Battle a owl:Class ;
+    rdfs:label "Battle"@en ;
+    rdfs:subClassOf schema1:Event .
+
+tont:War a owl:Class ;
+    rdfs:label "War"@en ;
+    rdfs:subClassOf schema1:Event .
+
+tont:race a owl:ObjectProperty ;
+    rdfs:label "race"@en ;
+    rdfs:domain tont:Character ;
+    rdfs:range tont:Race .
+
+tprop:body a owl:DatatypeProperty ;
+    rdfs:label "body"@en ;
+    rdfs:range xsd:integer .
+
+tprop:cardSet a owl:DatatypeProperty ;
+    rdfs:label "card set"@en .
+
+tprop:cardType a owl:DatatypeProperty ;
+    rdfs:label "card type"@en .
+
+tprop:destroyedDate a owl:DatatypeProperty ;
+    rdfs:label "destroyed date"@en .
+
+tprop:father a owl:ObjectProperty ;
+    rdfs:label "father"@en ;
+    rdfs:subPropertyOf schema1:parent .
+
+tprop:hairColor a owl:DatatypeProperty ;
+    rdfs:label "hair color"@en .
+
+tprop:height a owl:DatatypeProperty ;
+    rdfs:label "height"@en .
+
+tprop:metwCard a owl:ObjectProperty ;
+    rdfs:label "METW card"@en ;
+    rdfs:range tont:METWCard .
+
+tprop:mother a owl:ObjectProperty ;
+    rdfs:label "mother"@en ;
+    rdfs:subPropertyOf schema1:parent .
+
+tprop:objectType a owl:DatatypeProperty ;
+    rdfs:label "object type"@en .
+
+tprop:ownedBy a owl:ObjectProperty ;
+    rdfs:label "owned by"@en .
+
+tprop:prowess a owl:DatatypeProperty ;
+    rdfs:label "prowess"@en ;
+    rdfs:range xsd:integer .
+
+tprop:raceLabel a owl:DatatypeProperty ;
+    rdfs:label "race label"@en .
+
+tprop:realm a owl:ObjectProperty ;
+    rdfs:label "realm"@en ;
+    rdfs:domain tont:Location .
+
+tprop:result a owl:DatatypeProperty ;
+    rdfs:label "result"@en ;
+    rdfs:domain schema1:Event .
+
+tprop:translatedName a owl:DatatypeProperty ;
+    rdfs:label "translated name"@en ;
+    rdfs:comment "Name of the entity in a different language (from LOTR Fandom Wiki)"@en .
+
+tont:Character a owl:Class ;
+    rdfs:label "Tolkien Character"@en ;
+    rdfs:comment "A fictional character from Tolkien's legendarium"@en ;
+    rdfs:subClassOf schema1:Person .
+
+tont:Location a owl:Class ;
+    rdfs:label "Tolkien Location"@en ;
+    rdfs:subClassOf schema1:Place .
+
+tont:METWCard a owl:Class ;
+    rdfs:label "METW Card"@en ;
+    rdfs:comment "A card from Middle Earth: The Wizards collectible card game"@en .
+
+tont:Race a owl:Class ;
+    rdfs:label "Race/People"@en .
+

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Search - Tolkien KG{% endblock %}
+
+{% block content %}
+<h2>Search Entities</h2>
+
+<form action="/search" method="get" class="search-box">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search entities...">
+    <select name="type">
+        <option value="">All types</option>
+        <option value="character" {% if type_filter == 'character' %}selected{% endif %}>Characters</option>
+        <option value="location" {% if type_filter == 'location' %}selected{% endif %}>Locations</option>
+        <option value="artifact" {% if type_filter == 'artifact' %}selected{% endif %}>Artifacts</option>
+        <option value="event" {% if type_filter == 'event' %}selected{% endif %}>Events</option>
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+{% if query %}
+<div class="section">
+    <h2>Results for "{{ query }}" ({{ results|length }})</h2>
+    
+    {% if results %}
+    <div class="entity-list">
+        {% for r in results %}
+        {# FIX: Ajouter classe 'minimal' si pas de données #}
+        <div class="entity-card {% if not r.has_data %}minimal{% endif %}">
+            <a href="/resource/{{ r.uri }}">{{ r.label }}</a>
+            <div class="type">{{ r.type }}</div>
+            
+            {# FIX: Afficher l'URI pour différencier les doublons potentiels #}
+            <div class="entity-uri-preview" title="{{ r.uri }}">
+                {{ r.uri }}
+            </div>
+            
+            {# FIX: Badge si peu de données #}
+            {% if not r.has_data %}
+            <span class="no-data-badge">Limited data</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No results found.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{# AJOUT: Message d'aide si beaucoup de résultats similaires #}
+{% if results|length > 5 %}
+<div class="section" style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 20px;">
+    <p style="margin: 0; font-size: 0.9rem; color: #666;">
+        <strong>💡 Tip:</strong> If you see duplicate results, they may represent different aspects of the same entity
+        (e.g., character vs. location with same name). Check the URI below each result to distinguish them.
+    </p>
+</div>
+{% endif %}
+{% endblock %}

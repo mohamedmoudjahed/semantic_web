@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tolkien Knowledge Graph{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="/">Tolkien Knowledge Graph</a></h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/search">Search</a>
+                <a href="/sparql">SPARQL</a>
+                <a href="/ontology">Ontology</a>
+                <a href="/validate">Validation</a>
+                <a href="/build">Build</a>
+            </nav>
+        </header>
+        
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer>
+            <p>
+                Tolkien Knowledge Graph - Linked Data from 
+                <a href="https://tolkiengateway.net" target="_blank">Tolkien Gateway</a>
+                {% if fuseki_mode %}
+                | Triplestore: <a href="{{ fuseki_url }}" target="_blank">Fuseki</a>
+                {% endif %}
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

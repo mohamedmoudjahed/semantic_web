@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Reasoning: {{ results.name }} - Tolkien KG{% endblock %}
+
+{% block content %}
+<h2>Reasoning & Inference: {{ results.name }}</h2>
+
+<div class="message success">
+    <strong>This page shows inferred facts</strong> using RDFS reasoning (rdfs:subClassOf*) and owl:sameAs equivalences.
+</div>
+
+<div class="entity-uri">{{ results.uri }}</div>
+
+<div class="section">
+    <h3>All Classes (including superclasses via rdfs:subClassOf*)</h3>
+    <p>These classes include both direct types and inferred superclasses from schema.org hierarchy.</p>
+    <table class="properties-table">
+        <thead>
+            <tr>
+                <th>Class</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cls in results.all_classes %}
+            <tr>
+                <td>
+                    <a href="{{ cls.uri }}" target="_blank">{{ cls.label }}</a>
+                </td>
+                <td>
+                    {% if cls.is_inferred %}
+                    <span class="data-source" style="background:#d4edda;color:#155724;">INFERRED (superclass)</span>
+                    {% else %}
+                    <span class="data-source" style="background:#cce5ff;color:#004085;">DIRECT</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if results.same_as_entities %}
+<div class="section">
+    <h3>Equivalent Entities (owl:sameAs)</h3>
+    <div class="external-links">
+        {% for entity in results.same_as_entities %}
+        <a href="{{ entity.uri }}" target="_blank" class="external-link {{ entity.type }}">
+            {{ entity.type|upper }}: {{ entity.uri.split('/')[-1] }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="section">
+    <h3>All Relations (including via owl:sameAs)</h3>
+    <p>Relations marked as "inferred" are retrieved through owl:sameAs equivalences.</p>
+    <table class="properties-table">
+        <thead>
+            <tr>
+                <th>Predicate</th>
+                <th>Object</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rel in results.relations_with_sameas %}
+            <tr>
+                <td>{{ rel.predicate.split('/')[-1].split('#')[-1] }}</td>
+                <td>
+                    {% if rel.object.startswith('http') %}
+                    <a href="{{ rel.object }}" target="_blank">{{ rel.object.split('/')[-1] }}</a>
+                    {% else %}
+                    {{ rel.object }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if rel.is_inferred %}
+                    <span class="data-source" style="background:#fff3cd;color:#856404;">VIA owl:sameAs</span>
+                    {% else %}
+                    <span class="data-source" style="background:#cce5ff;color:#004085;">DIRECT</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <h3>SPARQL Queries Used for Inference</h3>
+    
+    <h4>Query 1: All classes with superclasses (rdfs:subClassOf*)</h4>
+    <pre>{{ example_queries.all_classes_with_hierarchy }}</pre>
+    
+    <h4>Query 2: Relations including owl:sameAs equivalences</h4>
+    <pre>{{ example_queries.relations_with_sameas }}</pre>
+</div>
+
+<div class="formats">
+    <a href="/resource/{{ results.name }}">← Back to entity page</a>
+</div>
+{% endblock %}

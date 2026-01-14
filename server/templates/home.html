@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Tolkien Knowledge Graph{% endblock %}
+
+{% block content %}
+<h2>Knowledge Graph Statistics</h2>
+
+{% if fuseki_mode %}
+<div class="message success">
+    <strong>✓ Connected to Fuseki Triplestore</strong><br>
+    Endpoint: <a href="{{ fuseki_url }}" target="_blank">{{ fuseki_url }}</a>
+</div>
+{% endif %}
+
+<div class="stats">
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.total }}</div>
+        <div class="stat-label">Total Triples</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.Character or stats.characters or 0 }}</div>
+        <div class="stat-label">Characters</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.Location or stats.locations or 0 }}</div>
+        <div class="stat-label">Locations</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.Artifact or stats.artifacts or 0 }}</div>
+        <div class="stat-label">Artifacts</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ stats.Event or stats.events or 0 }}</div>
+        <div class="stat-label">Events</div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Search</h2>
+    <form action="/search" method="get" class="search-box">
+        <input type="text" name="q" placeholder="Search entities...">
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<div class="section">
+    <h2>Sample Entities</h2>
+    
+    <div class="filter-bar" style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+        <form method="get" action="/">
+            
+            <!-- Filtres par catégorie -->
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="font-weight: 500; margin-right: 5px;">Category:</span>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="cat_character" value="1" {% if filters.cat_character %}checked{% endif %}>
+                    <span class="category-badge character">Characters</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="cat_location" value="1" {% if filters.cat_location %}checked{% endif %}>
+                    <span class="category-badge location">Locations</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="cat_artifact" value="1" {% if filters.cat_artifact %}checked{% endif %}>
+                    <span class="category-badge artifact">Artifacts</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="cat_event" value="1" {% if filters.cat_event %}checked{% endif %}>
+                    <span class="category-badge event">Events</span>
+                </label>
+            </div>
+            
+            <!-- Filtres par source externe -->
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+                <span style="font-weight: 500; margin-right: 5px;">Source:</span>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="dbpedia" value="1" {% if filters.dbpedia %}checked{% endif %}>
+                    <span class="entity-link-badge dbpedia">DB</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="wikidata" value="1" {% if filters.wikidata %}checked{% endif %}>
+                    <span class="entity-link-badge wikidata">WD</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="yago" value="1" {% if filters.yago %}checked{% endif %}>
+                    <span class="entity-link-badge yago">YA</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="wikipedia" value="1" {% if filters.wikipedia %}checked{% endif %}>
+                    <span class="entity-link-badge wikipedia">WI</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="metw" value="1" {% if filters.metw %}checked{% endif %}>
+                    <span class="entity-link-badge metw">ME</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="fandom" value="1" {% if filters.fandom %}checked{% endif %}>
+                    <span class="entity-link-badge fandom">FA</span>
+                </label>
+                
+                <label class="filter-checkbox" style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" name="csv" value="1" {% if filters.csv %}checked{% endif %}>
+                    <span class="entity-link-badge csv">CSV</span>
+                </label>
+                
+                <button type="submit" style="padding: 5px 15px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer;">Apply</button>
+                <a href="/" style="padding: 5px 15px; color: #666; text-decoration: none;">Reset</a>
+            </div>
+        </form>
+    </div>
+    
+    {% if entities %}
+    <div class="entity-list">
+        {% for e in entities %}
+        <div class="entity-card">
+            <a href="/resource/{{ e.uri }}">{{ e.label }}</a>
+            <div class="type">{{ e.type }}</div>
+            
+            {% if e.external_links %}
+            <div class="entity-external-links">
+                {% for link in e.external_links %}
+                <a href="{{ link.uri }}" target="_blank" class="entity-link-badge {{ link.type }}" title="{{ link.type|upper }}">
+                    {% if link.type == 'dbpedia' %}DB{% elif link.type == 'wikidata' %}WD{% elif link.type == 'yago' %}YA{% elif link.type == 'wikipedia' %}WI{% elif link.type == 'metw' %}ME{% elif link.type == 'fandom' %}FA{% elif link.type == 'csv' %}CSV{% else %}{{ link.type[0:2]|upper }}{% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="message" style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 4px;">
+        No entities found matching these filters. Try adjusting your selection.
+    </div>
+    {% endif %}
+</div>
+
+<div class="section">
+    <h2>Features</h2>
+    <ul>
+        <li><strong>Linked Data:</strong> Content negotiation (HTML, Turtle, RDF/XML, JSON-LD)</li>
+        <li><strong>SPARQL Endpoint:</strong> Query the knowledge graph with SPARQL</li>
+        <li><strong>External Links:</strong> Dynamic linking to DBpedia, Wikidata, YAGO, Wikipedia</li>
+        <li><strong>Triplestore:</strong> {% if fuseki_mode %}Apache Jena Fuseki{% else %}RDFLib (file-based){% endif %}</li>
+        <li><strong>Enrichment:</strong> METW cards, CSV data, multilingual labels (via LOTR Fandom)</li>
+    </ul>
+</div>
+{% endblock %}

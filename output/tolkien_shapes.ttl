@@ -1,0 +1,38 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema1: <http://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix tont: <http://tolkien-kg.org/ontology/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tont:ArtifactShape a sh:NodeShape ;
+    rdfs:label "Shape for Tolkien Artifacts" ;
+    sh:property tont:ArtifactShape_label ;
+    sh:targetClass tont:Artifact .
+
+tont:CharacterShape a sh:NodeShape ;
+    rdfs:label "Shape for Tolkien Characters" ;
+    sh:property tont:CharacterShape_label ;
+    sh:targetClass tont:Character .
+
+tont:EventShape a sh:NodeShape ;
+    rdfs:label "Shape for Events" ;
+    sh:property tont:EventShape_label ;
+    sh:targetClass schema1:Event .
+
+tont:LocationShape a sh:NodeShape ;
+    rdfs:label "Shape for Tolkien Locations" ;
+    sh:property tont:LocationShape_label ;
+    sh:targetClass tont:Location .
+
+tont:ArtifactShape_label sh:minCount 1 ;
+    sh:path rdfs:label .
+
+tont:CharacterShape_label sh:minCount 1 ;
+    sh:path rdfs:label .
+
+tont:EventShape_label sh:minCount 1 ;
+    sh:path rdfs:label .
+
+tont:LocationShape_label sh:minCount 1 ;
+    sh:path rdfs:label .
+
